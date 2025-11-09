@@ -1,0 +1,42 @@
+# Claude Code
+.claude/
+
+# Vim help tags (generated)
+doc/tags
+
+# Lua bytecode
+*.luac
+
+# Luarocks build files
+*.rock
+*.rockspec
+luarocks/
+
+# Editor files
+*.swp
+*.swo
+*~
+.*.sw?
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.iml
+
+# Testing
+.test/
+tests/.deps/
+.luacov
+luacov.*.out
+
+# Temporary files
+*.tmp
+*.log
