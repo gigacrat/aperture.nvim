@@ -496,6 +496,15 @@ function M.enable()
     return
   end
 
+  -- Dimming works by setting true-color (gui) hex highlights, which only
+  -- render when 'termguicolors' is on. Warn rather than fail silently.
+  if not vim.o.termguicolors then
+    vim.notify(
+      "Aperture: 'termguicolors' is off; dimming needs it to render. Add `vim.o.termguicolors = true`.",
+      vim.log.levels.WARN
+    )
+  end
+
   M.enabled = true
   M.create_dimmed_highlights()
 
