@@ -299,7 +299,8 @@ aperture.nvim/
 ├── tests/
 │   ├── minimal_init.lua   # Test bootstrap (plenary)
 │   ├── highlight_spec.lua # Color transform tests
-│   └── config_spec.lua    # Config validation tests
+│   ├── config_spec.lua    # Config validation tests
+│   └── autosize_spec.lua  # Autosize layout tests
 ├── Makefile               # `make test`
 └── README.md
 ```

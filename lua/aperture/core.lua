@@ -553,4 +553,13 @@ function M.toggle()
   end
 end
 
+-- Internal layout helpers exposed for testing only. These operate on the
+-- winlayout() tree and are not part of the public API.
+M._internal = {
+  collect_leaf_windows = collect_leaf_windows,
+  get_representative_window = get_representative_window,
+  find_window_container = find_window_container,
+  find_active_sibling = find_active_sibling,
+}
+
 return M
