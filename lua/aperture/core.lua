@@ -452,6 +452,19 @@ local function setup_autocmds()
     desc = "Update window dimming and autosize on focus change",
   })
 
+  -- Re-run when a window closes so the remaining layout is resized/dimmed
+  -- immediately, instead of waiting for the next focus change. Deferred so
+  -- winlayout() reflects the post-close tree.
+  vim.api.nvim_create_autocmd("WinClosed", {
+    group = M.autocmd_group,
+    callback = function()
+      vim.schedule(function()
+        M.update_windows()
+      end)
+    end,
+    desc = "Update window dimming and autosize when a window closes",
+  })
+
   -- Refresh highlights when colorscheme changes (for dimming)
   vim.api.nvim_create_autocmd("ColorScheme", {
     group = M.autocmd_group,
