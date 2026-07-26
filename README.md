@@ -240,6 +240,18 @@ This comprehensive approach means it works with any colorscheme, any plugin, and
 
 ## Development
 
+### Running Tests
+
+The test suite uses [plenary.nvim](https://github.com/nvim-lua/plenary.nvim)'s
+busted harness. Run it with:
+
+```sh
+make test
+```
+
+Plenary is reused from an existing install if present, otherwise a shallow copy
+is cloned into `.test/` (gitignored) on first run.
+
 ### Hot Reloading
 
 Use the built-in reload command:
@@ -284,6 +296,11 @@ aperture.nvim/
 │   └── aperture.lua       # User commands
 ├── doc/
 │   └── aperture.txt       # Help documentation (:help aperture)
+├── tests/
+│   ├── minimal_init.lua   # Test bootstrap (plenary)
+│   ├── highlight_spec.lua # Color transform tests
+│   └── config_spec.lua    # Config validation tests
+├── Makefile               # `make test`
 └── README.md
 ```
 
