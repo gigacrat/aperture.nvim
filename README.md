@@ -1,5 +1,7 @@
 # aperture.nvim
 
+[![Release](https://img.shields.io/github/v/release/gigacrat/aperture.nvim)](https://github.com/gigacrat/aperture.nvim/releases/latest)
+
 A Neovim plugin that automatically dims unfocused windows and intelligently resizes them to help you maintain visual focus on your current work.
 
 Like a camera's aperture controls both depth of field (what's in focus) and light exposure (how much view you get), this plugin combines visual dimming with smart window sizing.
