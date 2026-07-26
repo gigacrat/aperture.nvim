@@ -173,8 +173,11 @@ function M.get_all_highlights()
   for _, group_name in ipairs(all_groups) do
     local hl = M.get_highlight(group_name)
     -- Include groups even without colors - they might have other attributes
-    -- or be needed for inheritance chains
-    if hl and (hl.fg or hl.bg or hl.sp or hl.bold or hl.italic or hl.underline) then
+    -- or be needed for inheritance chains. Cover every rendering attribute so
+    -- e.g. reverse-only groups (which swap fg/bg) aren't silently dropped.
+    if hl and (hl.fg or hl.bg or hl.sp or hl.bold or hl.italic or hl.underline
+        or hl.undercurl or hl.underdouble or hl.underdotted or hl.underdashed
+        or hl.strikethrough or hl.reverse or hl.standout or hl.nocombine) then
       highlights[group_name] = hl
     end
   end
