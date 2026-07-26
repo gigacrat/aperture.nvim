@@ -1,0 +1,243 @@
+*aperture.txt*        Dim and resize unfocused windows to maintain focus
+
+Author:  gigacrat
+License: MIT
+
+==============================================================================
+CONTENTS                                                    *aperture-contents*
+
+  1. Introduction ..................... |aperture-introduction|
+  2. Requirements ..................... |aperture-requirements|
+  3. Setup ............................ |aperture-setup|
+  4. Options .......................... |aperture-options|
+  5. Commands ......................... |aperture-commands|
+  6. Lua API .......................... |aperture-api|
+  7. Terminal windows ................. |aperture-terminals|
+  8. Troubleshooting .................. |aperture-troubleshooting|
+
+==============================================================================
+1. INTRODUCTION                                         *aperture-introduction*
+
+aperture.nvim automatically dims unfocused windows and can intelligently
+resize the active window to maintain visual focus on your current work.
+
+It scans all currently defined highlight groups, builds dimmed/transformed
+versions of them, and applies those to unfocused windows via a per-window
+highlight namespace. The focused window always keeps the original highlights.
+Because it works on every highlight group, it adapts to any colorscheme,
+plugin, or custom highlight without manual configuration.
+
+==============================================================================
+2. REQUIREMENTS                                         *aperture-requirements*
+
+- Neovim >= 0.9 (uses the |nvim_get_hl()| API)
+- A terminal with true color support and 'termguicolors' enabled
+
+==============================================================================
+3. SETUP                                                       *aperture-setup*
+
+Call the setup function once, typically from your plugin manager config: >lua
+
+    require('aperture').setup()
+<
+Passing a table overrides the defaults (see |aperture-options|): >lua
+
+    require('aperture').setup({
+      dim_amount = 0.2,
+    })
+<
+setup() validates its arguments and returns |false| (after emitting an error
+notification) if any option is invalid; otherwise it returns |true|.
+
+==============================================================================
+4. OPTIONS                                                   *aperture-options*
+
+The defaults are: >lua
+
+    require('aperture').setup({
+      enabled = true,          -- Enable dimming on startup
+      dim_amount = 0.3,        -- Amount to dim unfocused windows (0.0-1.0)
+      greyscale_factor = 0.0,  -- Amount of greyscale effect (0.0-1.0)
+      sepia_factor = 0.0,      -- Amount of sepia effect (0.0-1.0)
+      dim_background = nil,    -- Optional bg override, e.g. "#1a1a1a"
+      debug = false,           -- Enable debug logging
+      quiet = false,           -- Suppress enable/disable notifications
+
+      autosize = {
+        enabled = false,       -- Enable automatic window resizing
+        min_width = 80,        -- Min width of active window
+        min_height = 20,       -- Min height of active window
+      },
+
+      excluded_filetypes = {},           -- Filetypes never dimmed
+      excluded_buftypes = { "prompt" },  -- Buftypes never dimmed
+      excluded_highlight_patterns = {    -- Lua patterns never dimmed
+        "^WinSeparator",
+      },
+    })
+<
+                                                        *aperture-opt-enabled*
+enabled ~
+    Start with dimming enabled. Default: |true|.
+
+                                                     *aperture-opt-dim_amount*
+dim_amount ~
+    How much to reduce brightness. 0.0 = no dimming, 1.0 = maximum.
+    Default: 0.3.
+
+                                               *aperture-opt-greyscale_factor*
+greyscale_factor ~
+    How much to desaturate colors. 0.0 = full color, 1.0 = full greyscale.
+    Default: 0.0.
+
+                                                   *aperture-opt-sepia_factor*
+sepia_factor ~
+    How much sepia tone to apply. 0.0 = none, 1.0 = full sepia.
+    Default: 0.0.
+
+                                                 *aperture-opt-dim_background*
+dim_background ~
+    Optional hex color used as the background of dimmed windows (applies to
+    Normal, NormalNC and EndOfBuffer). Useful for transparent colorschemes.
+    Default: nil.
+
+                                                          *aperture-opt-debug*
+debug ~
+    Emit debug notifications. Default: |false|.
+
+                                                          *aperture-opt-quiet*
+quiet ~
+    Suppress enable/disable notifications. Default: |false|.
+
+                                                       *aperture-opt-autosize*
+autosize ~
+    Table controlling automatic resizing of the active window. When enabled,
+    the active window is grown to at least min_width/min_height and the
+    remaining space is distributed evenly among inactive windows in the same
+    row/column. Autosize works independently of dimming.
+
+    autosize.enabled     Enable resizing. Default: |false|.
+    autosize.min_width   Minimum width of the active window. Values in the
+                         range 0-1 are treated as a fraction of available
+                         width; values >= 1 are absolute columns. Default: 80.
+    autosize.min_height  Minimum height of the active window. Same 0-1 vs >=1
+                         semantics as min_width. Default: 20.
+
+                                             *aperture-opt-excluded_filetypes*
+excluded_filetypes ~
+    List of filetypes that are never dimmed. Default: {} (empty).
+
+                                              *aperture-opt-excluded_buftypes*
+excluded_buftypes ~
+    List of buffer types that are never dimmed. Add "terminal" to leave
+    terminal windows at full brightness. Default: { "prompt" }.
+
+                                    *aperture-opt-excluded_highlight_patterns*
+excluded_highlight_patterns ~
+    List of Lua patterns (see |lua-patterns|); any highlight group whose name
+    matches is left undimmed. Default: { "^WinSeparator" }.
+
+Note: floating windows (Telescope, LSP hover, etc.) are always excluded from
+dimming automatically.
+
+==============================================================================
+5. COMMANDS                                                 *aperture-commands*
+
+                                                              *:ApertureEnable*
+:ApertureEnable         Enable window dimming for unfocused windows.
+
+                                                             *:ApertureDisable*
+:ApertureDisable        Disable window dimming.
+
+                                                              *:ApertureToggle*
+:ApertureToggle         Toggle window dimming on/off.
+
+                                                             *:ApertureRefresh*
+:ApertureRefresh        Rescan highlights and reapply dimming. Useful after a
+                        colorscheme change.
+
+                                                               *:ApertureStats*
+:ApertureStats          Show diagnostic statistics about captured highlight
+                        groups.
+
+                                                              *:ApertureReload*
+:ApertureReload         Reload the plugin (development helper). Note: this
+                        re-runs setup() with defaults and discards any options
+                        passed to your original setup() call.
+
+==============================================================================
+6. LUA API                                                       *aperture-api*
+
+                                                        *aperture.setup()*
+require('aperture').setup({opts})
+    Configure and initialize the plugin. See |aperture-setup|.
+
+                                                        *aperture.enable()*
+require('aperture').enable()
+    Enable dimming.
+
+                                                       *aperture.disable()*
+require('aperture').disable()
+    Disable dimming.
+
+                                                        *aperture.toggle()*
+require('aperture').toggle()
+    Toggle dimming.
+
+                                                       *aperture.refresh()*
+require('aperture').refresh()
+    Rescan highlights and reapply dimming.
+
+                                                    *aperture.is_enabled()*
+require('aperture').is_enabled()
+    Return whether dimming is currently enabled.
+
+                                                     *aperture.get_stats()*
+require('aperture').get_stats()
+    Return a table of diagnostic statistics about captured highlight groups: >lua
+
+        {
+          total,            -- total groups captured
+          with_fg,          -- groups with a foreground color
+          with_bg,          -- groups with a background color
+          with_sp,          -- groups with a special color
+          with_attrs_only,  -- groups with attributes but no color
+        }
+<
+Example keybinding: >lua
+
+    vim.keymap.set('n', '<leader>at', '<cmd>ApertureToggle<cr>',
+      { desc = 'Toggle window dimming' })
+<
+==============================================================================
+7. TERMINAL WINDOWS                                        *aperture-terminals*
+
+Terminal windows have only partial dimming support. Default text and UI
+elements (line numbers, borders, statusline) dim correctly, but ANSI-colored
+program output (e.g. `ls --color`, `git status`) stays at full brightness.
+
+This is because Neovim reads the terminal ANSI palette
+(g:terminal_color_0 .. g:terminal_color_15) once at TermOpen and cannot change
+it dynamically (see https://github.com/neovim/neovim/issues/8301).
+
+To keep terminals at full brightness instead, exclude them: >lua
+
+    require('aperture').setup({
+      excluded_buftypes = { "prompt", "terminal" },
+    })
+<
+==============================================================================
+8. TROUBLESHOOTING                                    *aperture-troubleshooting*
+
+Dimming not working ~
+    - Check whether it is enabled: `:lua =require('aperture').is_enabled()`
+    - Try `:ApertureRefresh`.
+    - Ensure your terminal supports true color and 'termguicolors' is set.
+
+Colors look wrong ~
+    - Lower |aperture-opt-dim_amount| (e.g. 0.2).
+    - Reduce or disable |aperture-opt-greyscale_factor| and
+      |aperture-opt-sepia_factor|.
+    - Some colorschemes may not work well with all effects.
+
+vim:tw=78:ts=8:et:ft=help:norl:

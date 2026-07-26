@@ -16,6 +16,11 @@ Like a camera's aperture controls both depth of field (what's in focus) and ligh
 - **Colorscheme aware**: Automatically refreshes when you change colorschemes
 - **Zero configuration**: Works out of the box with sensible defaults
 
+## Requirements
+
+- Neovim >= 0.9 (uses the `nvim_get_hl` API)
+- A terminal with true color support and `termguicolors` enabled
+
 ## Installation
 
 ### Using [Lazy.nvim](https://github.com/folke/lazy.nvim)
@@ -50,13 +55,13 @@ require('aperture').setup({
     min_height = 20,                 -- Minimum height for active window (use 0-1 for percentage, >=1 for absolute rows)
   },
 
-  -- Excluded filetypes (won't be dimmed)
+  -- Excluded filetypes (won't be dimmed). Empty by default; uncomment as needed.
   excluded_filetypes = {
-    "NvimTree",
-    "neo-tree",
-    "TelescopePrompt",
-    "lazy",
-    "mason",
+    -- "NvimTree",
+    -- "neo-tree",
+    -- "TelescopePrompt",
+    -- "lazy",
+    -- "mason",
   },
 
   -- Excluded buffer types (won't be dimmed)
@@ -187,6 +192,7 @@ The plugin works automatically once installed. Whenever you switch windows, unfo
 - `:ApertureDisable` - Disable window dimming
 - `:ApertureToggle` - Toggle dimming on/off
 - `:ApertureRefresh` - Refresh dimming (useful after colorscheme changes)
+- `:ApertureStats` - Show diagnostic statistics about captured highlights
 - `:ApertureReload` - Reload the plugin (development)
 
 ### Lua API
@@ -208,6 +214,10 @@ require('aperture').refresh()
 if require('aperture').is_enabled() then
   print("Dimming is active")
 end
+
+-- Get diagnostic statistics about captured highlight groups
+local stats = require('aperture').get_stats()
+-- => { total, with_fg, with_bg, with_sp, with_attrs_only }
 ```
 
 ### Keybindings
@@ -273,7 +283,7 @@ aperture.nvim/
 ├── plugin/
 │   └── aperture.lua       # User commands
 ├── doc/
-│   └── aperture.txt       # Help documentation (future)
+│   └── aperture.txt       # Help documentation (:help aperture)
 └── README.md
 ```
 
