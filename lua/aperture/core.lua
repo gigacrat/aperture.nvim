@@ -457,7 +457,9 @@ local function setup_autocmds()
   vim.api.nvim_create_autocmd("ColorScheme", {
     group = M.autocmd_group,
     callback = function()
-      M.refresh()
+      if M.enabled then
+        M.refresh()
+      end
     end,
     desc = "Refresh dimming on colorscheme change",
   })
@@ -529,8 +531,10 @@ function M.disable()
     M.undim_window(winnr)
   end
 
-  -- Clear autocommands
-  if M.autocmd_group then
+  -- Clear autocommands only if autosize doesn't still need them.
+  -- The augroup is shared between dimming and autosize, so tearing it down
+  -- while autosize is enabled would silently break resizing.
+  if M.autocmd_group and not config.options.autosize.enabled then
     vim.api.nvim_del_augroup_by_id(M.autocmd_group)
     M.autocmd_group = nil
   end
