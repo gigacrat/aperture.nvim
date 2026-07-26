@@ -64,9 +64,9 @@ function M.create_dimmed_highlights()
     M.dim_namespace = vim.api.nvim_create_namespace('aperture_dimming')
   end
 
-  local dim_amount = config.options.dim_amount or 0.36
-  local greyscale_factor = config.options.greyscale_factor or 0.0
-  local sepia_factor = config.options.sepia_factor or 0.0
+  local dim_amount = config.options.dim_amount or config.defaults.dim_amount
+  local greyscale_factor = config.options.greyscale_factor or config.defaults.greyscale_factor
+  local sepia_factor = config.options.sepia_factor or config.defaults.sepia_factor
   local dim_background = config.options.dim_background
 
   -- Get all currently defined highlight groups

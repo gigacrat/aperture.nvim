@@ -20,49 +20,6 @@ Like a camera's aperture controls both depth of field (what's in focus) and ligh
 
 ### Using [Lazy.nvim](https://github.com/folke/lazy.nvim)
 
-#### Method 1: Local Development Path
-
-```lua
-{
-  dir = "~/projects/aperture.nvim",
-  name = "aperture",
-  config = function()
-    require('aperture').setup({
-      dim_amount = 0.3,        -- 30% dimming
-      greyscale_factor = 0.0,  -- No greyscale
-    })
-  end,
-}
-```
-
-#### Method 2: Dev Mode (Recommended for Development)
-
-First, configure Lazy's dev path in your main setup:
-
-```lua
-require("lazy").setup("plugins", {
-  dev = {
-    path = "~/projects",
-    patterns = {},
-    fallback = false,
-  },
-})
-```
-
-Then add the plugin:
-
-```lua
-{
-  "gigacrat/aperture.nvim",
-  dev = true,
-  config = function()
-    require('aperture').setup()
-  end,
-}
-```
-
-#### Method 3: GitHub (After Publishing)
-
 ```lua
 {
   "gigacrat/aperture.nvim",
@@ -334,11 +291,32 @@ aperture.nvim/
 
 ### Terminal windows
 
-Terminal windows are dimmed like regular windows (all highlights affected). However, dimming may be more noticeable in terminals since program output (like `ls --color`, `git status`) uses bright ANSI colors by default.
+**Important limitation**: Terminal windows have partial dimming support due to how Neovim's terminal emulator works.
+
+#### What Gets Dimmed
+- **Default text** (using Normal/Terminal highlight groups) ✓ Dims correctly
+- **UI elements** (line numbers, borders, statusline) ✓ Dims correctly
+
+#### What Doesn't Get Dimmed
+- **ANSI colored text** (program output like `ls --color`, `git status`) ✗ Stays bright
+
+#### Technical Explanation
+
+Neovim's terminal emulator has two rendering layers:
+
+1. **ANSI color palette** (`g:terminal_color_0` through `g:terminal_color_15`) - Controls the 16 terminal colors
+2. **Editor highlights** - Overlays on top with higher precedence
+
+The plugin can dynamically dim editor highlights by switching window highlight namespaces. However, **the ANSI color palette is only read once at `TermOpen` and cannot be changed dynamically**. This is a fundamental limitation of Neovim's terminal implementation (see [neovim/neovim#8301](https://github.com/neovim/neovim/issues/8301)).
+
+This means:
+- When you focus/unfocus a terminal window, the ANSI colors stay the same
+- Colored terminal output (prompts, syntax highlighting, git diffs) remains at full brightness
+- Only the default text and UI elements will dim
 
 #### Excluding Terminals
 
-If you find terminal dimming distracting or too aggressive, you can exclude them:
+Since terminals cannot be fully dimmed, you may want to exclude them entirely:
 
 ```lua
 require('aperture').setup({
