@@ -42,6 +42,15 @@ M.defaults = {
 -- Active options (populated by setup)
 M.options = {}
 
+-- List-like options that must be replaced wholesale rather than deep-merged.
+-- vim.tbl_deep_extend merges arrays by index, so without this a user could not
+-- shrink or clear a non-empty default list (e.g. excluded_buftypes = {}).
+local LIST_OPTIONS = {
+  "excluded_filetypes",
+  "excluded_buftypes",
+  "excluded_highlight_patterns",
+}
+
 -- Validate a hex color string
 local function validate_hex_color(color)
   if type(color) ~= "string" then
@@ -159,6 +168,15 @@ function M.setup(opts)
 
   -- Merge user opts into defaults
   M.options = vim.tbl_deep_extend('force', {}, M.defaults, opts)
+
+  -- Replace list options wholesale so users can override a default list entirely
+  -- (deep-extend would otherwise merge them element-by-element).
+  for _, key in ipairs(LIST_OPTIONS) do
+    if opts[key] ~= nil then
+      M.options[key] = vim.deepcopy(opts[key])
+    end
+  end
+
   return true
 end
 

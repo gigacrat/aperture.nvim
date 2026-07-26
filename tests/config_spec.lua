@@ -57,6 +57,26 @@ describe("config.setup", function()
   it("rejects autosize.min_width <= 0", function()
     assert.is_false(config.setup({ autosize = { min_width = 0 } }))
   end)
+
+  it("replaces a default list wholesale instead of index-merging", function()
+    -- excluded_buftypes defaults to { "prompt" }; a user list must replace it,
+    -- not merge over it.
+    assert.is_true(config.setup({ excluded_buftypes = { "terminal", "nofile" } }))
+    assert.same({ "terminal", "nofile" }, config.options.excluded_buftypes)
+  end)
+
+  it("lets an empty list clear a non-empty default", function()
+    assert.is_true(config.setup({ excluded_buftypes = {} }))
+    assert.same({}, config.options.excluded_buftypes)
+  end)
+
+  it("does not alias the user's list into options", function()
+    local user = { "help" }
+    config.setup({ excluded_filetypes = user })
+    table.insert(user, "lua")
+    -- Mutating the caller's table must not leak into stored options.
+    assert.same({ "help" }, config.options.excluded_filetypes)
+  end)
 end)
 
 describe("config.should_exclude_window", function()
