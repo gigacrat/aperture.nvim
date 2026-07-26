@@ -58,12 +58,15 @@ end
 -- Print diagnostic information (for debugging)
 function M.print_stats()
   local stats = M.get_stats()
-  print("Aperture Highlight Statistics:")
-  print(string.format("  Total groups captured: %d", stats.total))
-  print(string.format("  Groups with foreground: %d", stats.with_fg))
-  print(string.format("  Groups with background: %d", stats.with_bg))
-  print(string.format("  Groups with special: %d", stats.with_sp))
-  print(string.format("  Groups with attrs only: %d", stats.with_attrs_only))
+  local lines = {
+    "Aperture Highlight Statistics:",
+    string.format("  Total groups captured: %d", stats.total),
+    string.format("  Groups with foreground: %d", stats.with_fg),
+    string.format("  Groups with background: %d", stats.with_bg),
+    string.format("  Groups with special: %d", stats.with_sp),
+    string.format("  Groups with attrs only: %d", stats.with_attrs_only),
+  }
+  vim.notify(table.concat(lines, "\n"), vim.log.levels.INFO)
 end
 
 return M

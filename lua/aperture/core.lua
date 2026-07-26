@@ -46,12 +46,11 @@ local function debounced_refresh()
 
   M.refresh_pending = true
 
-  if M.refresh_timer then
-    M.refresh_timer:stop()
-  end
-
+  -- Only one timer is ever in flight at a time (guarded by refresh_pending).
+  -- Clear our reference when it fires so disable() knows it's already done.
   M.refresh_timer = vim.defer_fn(function()
     M.refresh_pending = false
+    M.refresh_timer = nil
     if M.enabled then
       do_refresh()
     end
@@ -266,11 +265,11 @@ local function resize_dimension(params)
   if dimension == "width" then
     get_size = vim.api.nvim_win_get_width
     set_size = vim.api.nvim_win_set_width
-    win_min_option = vim.o.winminwidth or 1
+    win_min_option = vim.o.winminwidth
   else  -- height
     get_size = vim.api.nvim_win_get_height
     set_size = vim.api.nvim_win_set_height
-    win_min_option = vim.o.winminheight or 1
+    win_min_option = vim.o.winminheight
   end
 
   -- Filter out excluded windows
@@ -519,11 +518,12 @@ function M.disable()
 
   M.enabled = false
 
-  -- Stop any pending refresh
-  if M.refresh_timer then
+  -- Stop any pending refresh and release the libuv timer handle
+  if M.refresh_timer and not M.refresh_timer:is_closing() then
     M.refresh_timer:stop()
-    M.refresh_timer = nil
+    M.refresh_timer:close()
   end
+  M.refresh_timer = nil
   M.refresh_pending = false
 
   -- Remove all dimming from windows
