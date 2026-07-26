@@ -291,7 +291,8 @@ aperture.nvim/
 │       ├── init.lua       # Main entry point with setup()
 │       ├── config.lua     # Configuration and defaults
 │       ├── core.lua       # Window focus tracking and dimming logic
-│       └── highlight.lua  # Color manipulation functions
+│       ├── highlight.lua  # Color manipulation functions
+│       └── health.lua     # :checkhealth aperture
 ├── plugin/
 │   └── aperture.lua       # User commands
 ├── doc/
@@ -306,6 +307,10 @@ aperture.nvim/
 ```
 
 ## Troubleshooting
+
+Run `:checkhealth aperture` first — it reports your Neovim version,
+`termguicolors` state, whether `setup()` ran, the active feature state, and how
+many highlight groups were captured for dimming.
 
 ### Dimming not working
 - Check if dimming is enabled: `:lua =require('aperture').is_enabled()`
