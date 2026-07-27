@@ -5,6 +5,20 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.1] - 2026-07-26
+
+### Changed
+
+- The startup enable no longer emits an info notification; `setup()` is now
+  silent. The `:Aperture*` commands still confirm enable/disable (gated by
+  `quiet`), and `enable`/`disable`/`toggle` accept `{ silent = true }`.
+
+### Fixed
+
+- The `termguicolors` warning is deferred until after startup, so a config that
+  enables `termguicolors` later in init is no longer flagged as a false
+  positive.
+
 ## [1.1.0] - 2026-07-26
 
 ### Added
@@ -36,5 +50,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release.
 
+[1.1.1]: https://github.com/gigacrat/aperture.nvim/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/gigacrat/aperture.nvim/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/gigacrat/aperture.nvim/releases/tag/v1.0.0
