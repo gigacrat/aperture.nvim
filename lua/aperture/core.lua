@@ -504,11 +504,14 @@ function M.init_autosize()
 end
 
 -- Enable the dimming effect
-function M.enable()
+-- opts.silent suppresses the "enabled" notification (used for the startup
+-- enable); warnings and errors are always shown regardless.
+function M.enable(opts)
   if M.enabled then
     return
   end
 
+  opts = opts or {}
   M.enabled = true
   M.create_dimmed_highlights()
 
@@ -531,17 +534,19 @@ function M.enable()
     end
   end)
 
-  if not config.options.quiet then
+  if not opts.silent and not config.options.quiet then
     vim.notify("Aperture: Dimming enabled", vim.log.levels.INFO)
   end
 end
 
 -- Disable the dimming effect
-function M.disable()
+-- opts.silent suppresses the "disabled" notification.
+function M.disable(opts)
   if not M.enabled then
     return
   end
 
+  opts = opts or {}
   M.enabled = false
 
   -- Stop any pending refresh and release the libuv timer handle
@@ -565,17 +570,17 @@ function M.disable()
     M.autocmd_group = nil
   end
 
-  if not config.options.quiet then
+  if not opts.silent and not config.options.quiet then
     vim.notify("Aperture: Dimming disabled", vim.log.levels.INFO)
   end
 end
 
 -- Toggle the dimming effect
-function M.toggle()
+function M.toggle(opts)
   if M.enabled then
-    M.disable()
+    M.disable(opts)
   else
-    M.enable()
+    M.enable(opts)
   end
 end
 

@@ -107,7 +107,9 @@ debug ~
 
                                                           *aperture-opt-quiet*
 quiet ~
-    Suppress enable/disable notifications. Default: |false|.
+    Suppress the enable/disable notifications emitted by the :Aperture*
+    commands. The startup enable is always silent regardless of this option.
+    Default: |false|.
 
                                                        *aperture-opt-autosize*
 autosize ~
@@ -173,16 +175,17 @@ require('aperture').setup({opts})
     Configure and initialize the plugin. See |aperture-setup|.
 
                                                         *aperture.enable()*
-require('aperture').enable()
-    Enable dimming.
+require('aperture').enable({opts})
+    Enable dimming. {opts} is optional; pass { silent = true } to suppress
+    the notification.
 
                                                        *aperture.disable()*
-require('aperture').disable()
-    Disable dimming.
+require('aperture').disable({opts})
+    Disable dimming. Accepts the same {opts} as |aperture.enable()|.
 
                                                         *aperture.toggle()*
-require('aperture').toggle()
-    Toggle dimming.
+require('aperture').toggle({opts})
+    Toggle dimming. Accepts the same {opts} as |aperture.enable()|.
 
                                                        *aperture.refresh()*
 require('aperture').refresh()

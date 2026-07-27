@@ -12,9 +12,10 @@ function M.setup(opts)
     return false  -- Validation failed, error already shown
   end
 
-  -- Enable dimming if configured
+  -- Enable dimming if configured. Silent: startup should not emit an info
+  -- notification (users opt into feedback via the :Aperture* commands).
   if config.options.enabled then
-    core.enable()
+    core.enable({ silent = true })
   end
 
   -- Initialize autosize if configured (even if dimming is disabled)
@@ -24,18 +25,18 @@ function M.setup(opts)
 end
 
 -- Enable dimming
-function M.enable()
-  core.enable()
+function M.enable(opts)
+  core.enable(opts)
 end
 
 -- Disable dimming
-function M.disable()
-  core.disable()
+function M.disable(opts)
+  core.disable(opts)
 end
 
 -- Toggle dimming
-function M.toggle()
-  core.toggle()
+function M.toggle(opts)
+  core.toggle(opts)
 end
 
 -- Refresh dimming (useful after config changes)

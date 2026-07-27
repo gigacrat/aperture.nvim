@@ -48,7 +48,7 @@ require('aperture').setup({
   sepia_factor = 0.0,                -- Amount of sepia effect (0.0-1.0)
   dim_background = nil,              -- Optional: Override background color (e.g., "#1a1a1a")
   debug = false,                     -- Enable debug logging
-  quiet = false,                     -- Suppress enable/disable notifications
+  quiet = false,                     -- Suppress :Aperture* enable/disable notifications (startup is always silent)
 
   -- Window autosize configuration
   autosize = {
@@ -90,7 +90,7 @@ require('aperture').setup({
 - **`sepia_factor`**: How much sepia tone to apply (0.0 = none, 1.0 = full sepia)
 - **`dim_background`**: Optional background color override for dimmed windows (e.g., `"#1a1a1a"`, `"#0d0d0d"`) - useful for transparent colorschemes
 - **`debug`**: Enable debug logging to see when highlights are refreshed (default: `false`)
-- **`quiet`**: Suppress enable/disable notifications (default: `false`)
+- **`quiet`**: Suppress the enable/disable notifications from the `:Aperture*` commands; startup is always silent regardless (default: `false`)
 
 #### Autosize Options
 - **`autosize.enabled`**: Enable automatic window resizing (default: `false`)

@@ -8,7 +8,7 @@ M.defaults = {
   sepia_factor = 0.0,                -- Amount of sepia effect (0.0-1.0)
   dim_background = nil,              -- Optional: Override background color for dimmed windows (e.g., "#1a1a1a")
   debug = false,                     -- Enable debug logging
-  quiet = false,                     -- Suppress enable/disable notifications
+  quiet = false,                     -- Suppress :Aperture* enable/disable notifications (startup is always silent)
 
   -- Window autosize configuration
   autosize = {
