@@ -509,15 +509,6 @@ function M.enable()
     return
   end
 
-  -- Dimming works by setting true-color (gui) hex highlights, which only
-  -- render when 'termguicolors' is on. Warn rather than fail silently.
-  if not vim.o.termguicolors then
-    vim.notify(
-      "Aperture: 'termguicolors' is off; dimming needs it to render. Add `vim.o.termguicolors = true`.",
-      vim.log.levels.WARN
-    )
-  end
-
   M.enabled = true
   M.create_dimmed_highlights()
 
@@ -526,6 +517,19 @@ function M.enable()
 
   -- Initial update
   M.update_windows()
+
+  -- Dimming works by setting true-color (gui) hex highlights, which only
+  -- render when 'termguicolors' is on. Deferred so a config that enables
+  -- termguicolors later in startup isn't flagged as a false positive; the
+  -- M.enabled recheck avoids warning if dimming was toggled back off.
+  vim.schedule(function()
+    if M.enabled and not vim.o.termguicolors then
+      vim.notify(
+        "Aperture: 'termguicolors' is off; dimming needs it to render. Add `vim.o.termguicolors = true`.",
+        vim.log.levels.WARN
+      )
+    end
+  end)
 
   if not config.options.quiet then
     vim.notify("Aperture: Dimming enabled", vim.log.levels.INFO)
